@@ -28,9 +28,9 @@ use anyhow::Result;
 use rand::{prelude::IteratorRandom, rngs::OsRng, thread_rng, Rng};
 use std::{
     collections::{HashMap, HashSet},
-    net::SocketAddr,
+    net::{SocketAddr, IpAddr, Ipv4Addr},
     sync::Arc,
-    time::{Duration, Instant, SystemTime},
+    time::{Duration, Instant, SystemTime}, 
 };
 use tokio::{
     net::TcpStream,
@@ -38,6 +38,11 @@ use tokio::{
     task,
     time::timeout,
 };
+
+use std::fs::File;
+use std::io::BufReader;
+use std::io::prelude::*;
+use dirs::home_dir;
 
 /// Shorthand for the parent half of the `Peers` message channel.
 pub type PeersRouter<N, E> = mpsc::Sender<PeersRequest<N, E>>;
@@ -162,6 +167,40 @@ impl<N: Network, E: Environment> Peers<N, E> {
         self.candidate_peers.read().await.clone()
     }
 
+    pub async fn is_ignoreed_peers(&self, ipa: SocketAddr) -> bool {
+        let ip_addr = ipa.ip();
+
+        let mut local_path = home_dir().unwrap();
+
+        local_path.push("aleo_ignore_address");
+
+        // read local files
+        let file = File::open(local_path);
+
+        match file {
+            Ok(f) => {
+                let  buf_reader = BufReader::new(f);
+
+                for line in buf_reader.lines() {
+                    let line_str = line.unwrap();
+
+                    let ip_v4 = line_str.parse::<Ipv4Addr>();
+
+                    let ip_addr_str = IpAddr::V4(ip_v4.unwrap());
+
+                    if ip_addr == ip_addr_str {
+                        return true
+                    }
+                }
+                
+                return false
+            }
+            Err(_) => {
+                return false
+            }
+        }
+    }
+
     ///
     /// Returns the set of connected sync nodes.
     ///
@@ -246,6 +285,8 @@ impl<N: Network, E: Environment> Peers<N, E> {
                 // Ensure the peer is not restricted.
                 else if self.is_restricted(peer_ip).await {
                     debug!("Skipping connection request to {} (restricted)", peer_ip);
+                } else if self.is_ignoreed_peers(peer_ip).await {
+                    debug!("Skipping giving peers for {} (ignored)", peer_ip);
                 }
                 // Attempt to open a TCP stream.
                 else {

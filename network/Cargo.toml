@@ -16,6 +16,9 @@ categories = [ "cryptography", "operating-systems" ]
 license = "GPL-3.0"
 edition = "2021"
 
+[dependencies.dirs]
+version = "4.0.0"
+
 [dependencies.anyhow]
 version = "1"
 

@@ -2805,6 +2805,7 @@ dependencies = [
  "bincode",
  "bytes",
  "circular-queue",
+ "dirs",
  "futures",
  "once_cell",
  "rand",
