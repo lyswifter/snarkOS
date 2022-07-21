@@ -234,21 +234,21 @@ impl<N: Network, E: Environment> Peer<N, E> {
                             bail!("Already connected to a peer with nonce {}", peer_nonce);
                         }
                         // Verify the listener port.
-                        if peer_ip.port() != listener_port {
-                            // Update the peer IP to the listener port.
-                            peer_ip.set_port(listener_port);
+                        // if peer_ip.port() != listener_port {
+                        //     // Update the peer IP to the listener port.
+                        //     peer_ip.set_port(listener_port);
 
-                            // Ensure the claimed listener port is open.
-                            if let Err(error) =
-                                timeout(Duration::from_millis(E::CONNECTION_TIMEOUT_IN_MILLIS), TcpStream::connect(peer_ip)).await
-                            {
-                                // Send the disconnect message.
-                                let message = Message::Disconnect(DisconnectReason::YourPortIsClosed(listener_port));
-                                outbound_socket.send(message).await?;
+                        //     // Ensure the claimed listener port is open.
+                        //     if let Err(error) =
+                        //         timeout(Duration::from_millis(E::CONNECTION_TIMEOUT_IN_MILLIS), TcpStream::connect(peer_ip)).await
+                        //     {
+                        //         // Send the disconnect message.
+                        //         let message = Message::Disconnect(DisconnectReason::YourPortIsClosed(listener_port));
+                        //         outbound_socket.send(message).await?;
 
-                                bail!("Unable to reach '{}': '{:?}'", peer_ip, error);
-                            }
-                        }
+                        //         bail!("Unable to reach '{}': '{:?}'", peer_ip, error);
+                        //     }
+                        // }
                         // Send the challenge response.
                         let message = Message::ChallengeResponse(Data::Object(genesis_header.clone()));
                         trace!("Sending '{}-B' to {}", message.name(), peer_ip);
