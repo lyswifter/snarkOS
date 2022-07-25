@@ -63,7 +63,7 @@ impl<N: Network, E: Environment> Server<N, E> {
         // Initialize the ledger storage path.
         let ledger_storage_path = node.ledger_storage_path(local_ip);
         // Initialize the operator storage path.
-        let operator_storage_path = node.operator_storage_path(local_ip);
+        // let operator_storage_path = node.operator_storage_path(local_ip);
         // Initialize the prover storage path.
         let prover_storage_path = node.prover_storage_path(local_ip);
 
@@ -80,23 +80,23 @@ impl<N: Network, E: Environment> Server<N, E> {
         let (prover, prover_handler) = Prover::open::<_>(&prover_storage_path, pool_ip, state.clone()).await?;
 
         // Initialize a new instance for managing the operator.
-        let (operator, operator_handler) = Operator::open::<_>(&operator_storage_path, state.clone()).await?;
+        // let (operator, operator_handler) = Operator::open::<_>(&operator_storage_path, state.clone()).await?;
 
         // Initialise the metrics exporter.
-        #[cfg(any(feature = "test", feature = "prometheus"))]
-        Self::initialize_metrics(ledger.reader().clone());
+        // #[cfg(any(feature = "test", feature = "prometheus"))]
+        // Self::initialize_metrics(ledger.reader().clone());
 
         let server = Self { state };
 
         server.state.initialize_peers(peers, peers_handler).await;
         server.state.initialize_ledger(ledger, ledger_handler).await;
         server.state.initialize_prover(prover, prover_handler).await;
-        server.state.initialize_operator(operator, operator_handler).await;
+        // server.state.initialize_operator(operator, operator_handler).await;
 
-        server.state.prover().initialize_miner().await;
+        // server.state.prover().initialize_miner().await;
         server.state.prover().initialize_pooling().await;
         server.state.prover().initialize_pool_connection_loop(pool_ip).await;
-        server.state.operator().initialize().await;
+        // server.state.operator().initialize().await;
 
         server.initialize_notification(address).await;
         server.initialize_listener(listener).await;

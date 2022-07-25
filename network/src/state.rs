@@ -103,7 +103,7 @@ impl<N: Network, E: Environment> State<N, E> {
                     // Update the state of the ledger.
                     // Note: Do not wrap this call in a `tokio::spawn` as `BlockResponse` messages
                     // will end up being processed out of order.
-                    state.ledger().update(request).await;
+                    // state.ledger().update(request).await;
                 }
             }),
         );
