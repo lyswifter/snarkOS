@@ -147,7 +147,7 @@ pub fn main() {
         //     let _genesis_block = generate::<Testnet3>(private_key).unwrap();
         // }
 
-        for _ in 1..10 {
+        for _ in 1..100 {
             tokio::spawn(async move {
                 process().await;
             });
