@@ -2807,6 +2807,7 @@ dependencies = [
  "circular-queue",
  "dirs",
  "futures",
+ "num_cpus",
  "once_cell",
  "rand",
  "serde",

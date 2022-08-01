@@ -64,6 +64,9 @@ version = "0.8.0"
 [dependencies.time]
 version = "0.3.7"
 
+[dependencies.num_cpus]
+version = "1"
+
 [dependencies.tokio]
 version = "1"
 features = [
